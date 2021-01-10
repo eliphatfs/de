@@ -25,6 +25,9 @@ test('tensor fill and index visit', () => {
 
     expect(() => small.at(0, 1)).toThrowError();
     expect(() => odd.at(2, 3, 3)).toThrowError();
+    
+    expect(small.view().toTensor()).toEqual(small);
+    expect(odd.view().toTensor()).toEqual(odd);
 });
 
 test('vargs extension', () => {
@@ -41,4 +44,5 @@ test('vargs extension', () => {
 test('0-tensor basics', () => {
     expect(new Tensor([], Int32Array).fill(5).at()).toBe(5);
     expect(new Tensor([], Int32Array).fill(-3).setElement([], 2).at()).toBe(2);
+    expect(new Tensor([], Int32Array).fill(42).view().toTensor().at()).toBe(42);
 });

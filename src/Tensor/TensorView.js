@@ -1,4 +1,5 @@
 import Tensor from './Tensor.js';
+import CollectKernelMultiplex from "./MicroKernel/CollectKernels.js"
 
 class TensorView {
     /**
@@ -17,7 +18,7 @@ class TensorView {
     }
 
     toTensor() {
-        let tensor = new Tensor(shape, this.tensor.arrayType);
+        return new CollectKernelMultiplex().dispatch(this).tensor;
     }
 
     /**
@@ -32,7 +33,7 @@ class TensorView {
 
     at(...indices) {
         if (indices.length != this.shape.length) throw new TypeError("indices for Tensor.at should have same number of dimensions as shape.");
-        return this.raw[this.indicesToIndex(indices)];
+        return this.tensor.raw[this.indicesToIndex(indices)];
     }
 }
 

@@ -36,11 +36,14 @@ class BaseMicroKernel {
         if (spec.operandNDims.length !== operands.length)
             return new Error("The operation " + spec.name + " requires "
                              + spec.operandNDims.length + " operands, got "
-                             + operands.lengths);
+                             + operands.length);
         if (operands.length === 0)
             return new Error("Ill-defined kernel with 0 arguments: " + spec.name);
         let collectedNDims = operands.map((op) => op.shape.length);
         let ndimDelta = spec.operandNDims.map((x, i) => collectedNDims[i] - x);
+        if (ndimDelta.some((x) => x < 0))
+            return new Error("#dims of operands for " + spec.name + " does not suffice: got "
+                             + collectedNDims + ", requires at least" + spec.operandNDims);
         if (ndimDelta.some((x) => x !== ndimDelta[0]))
             return new Error("#dims of operands for " + spec.name + " does not match: got "
                              + collectedNDims + ", requires" + spec.operandNDims
@@ -50,7 +53,7 @@ class BaseMicroKernel {
         if (batchDims.some((x) => !Util.arrayEqual(x, batchDims[0])))
             return new Error("Operands for " + spec.name + " differ in batch dimensions: got "
                              + batchDims.join(" & ") + ".");
-        return null;
+        return [batchDims, ndimDelta[0]];
     }
 
     /**
@@ -59,12 +62,13 @@ class BaseMicroKernel {
      */
     dispatch(...operands) {
         let checkResult = this.checkInputs(operands);
-        if (checkResult !== null) throw checkResult;
+        if (checkResult instanceof Error) throw checkResult;
+        const [batchDims, ndimDeltaVal] = checkResult;
         let resultShape = batchDims[0].concat(
-            this.computeShape(operands.map((op) => op.shape.slice(ndimDelta[0])))
+            this.computeShape(...operands.map((op) => op.shape.slice(ndimDeltaVal)))
         );
         let outView = new Tensor(resultShape, operands[0].tensor.arrayType).view();
-        this._dispatch(operands, 0, ndimDelta[0] || 0, outView);
+        this._dispatch(operands, 0, ndimDeltaVal || 0, outView);
         return outView;
     }
 
@@ -76,7 +80,7 @@ class BaseMicroKernel {
      * @param {TensorView} outView 
      */
     _dispatch(operands, ndim, ndimDelta, outView) {
-        if (ndim == ndimDelta) return this.invoke(outView, ...operands);
+        if (ndim === ndimDelta) return this.invoke(outView, ...operands);
         for (let i = 0; i < outView.shape[0]; ++i) {
             let subView = new TensorView (
                 outView.tensor,
@@ -84,7 +88,13 @@ class BaseMicroKernel {
                 outView.shape.slice(1),
                 outView.strides.slice(1)
             );
-            this._dispatch(operands, ndim + 1, ndimDelta, subView);
+            let suboperands = operands.map((x) => new TensorView(
+                x.tensor,
+                x.offset + i * x.strides[1],
+                x.shape.slice(1),
+                x.strides.slice(1)
+            ));
+            this._dispatch(suboperands, ndim + 1, ndimDelta, subView);
         }
     }
 }
