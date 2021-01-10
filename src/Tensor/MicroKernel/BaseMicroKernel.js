@@ -23,9 +23,9 @@ class BaseMicroKernel {
     /**
      * 
      * @param {...number[]} opShapes 
-     * @returns {number[] | undefined}
+     * @returns {number[]}
      */
-    computeShape(...opShapes) { return undefined; }
+    computeShape(...opShapes) { return null; }
 
     /**
      * 
