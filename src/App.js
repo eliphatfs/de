@@ -3,8 +3,6 @@ import React from 'react';
 import * as PIXI from 'pixi.js';
 
 class PixiApp extends React.Component {
-    main: PIXI.Application
-    domref: HTMLElement
 
     constructor(props) {
         super(props);
