@@ -32,7 +32,7 @@ class TensorView {
     }
 
     at(...indices) {
-        if (indices.length != this.shape.length) throw new TypeError("indices for Tensor.at should have same number of dimensions as shape.");
+        if (indices.length != this.shape.length) throw new TypeError("indices for TensorView.at should have same number of dimensions as shape.");
         return this.tensor.raw[this.indicesToIndex(indices)];
     }
 }

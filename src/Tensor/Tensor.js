@@ -50,7 +50,24 @@ class Tensor {
      */
     fill(num) { this.raw.fill(num); return this; }
 
-    view() { return new TensorView(this, 0, this.shape, this.strides); }
+    view() { return new TensorView(this, 0, this.shape); }
+
+    /**
+     * 
+     * @param {number[]} flatArray 
+     * @param {number[]} shape 
+     * @param {Function} arrayType 
+     */
+    static fromArray(flatArray, shape, arrayType) {
+        let tensor = new Tensor (shape, arrayType);
+        if (flatArray.length !== tensor.raw.length)
+            throw new Error("Tensor.fromArray data length not equal array size.");
+        const n = flatArray.length;
+        let draw = tensor.raw;
+        for (let i = 0; i < n; ++i)
+            draw[i] = flatArray[i];
+        return tensor;
+    }
 }
 
 export default Tensor;

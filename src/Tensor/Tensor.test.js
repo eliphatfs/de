@@ -15,8 +15,10 @@ test('tensor fill and index visit', () => {
     expect(tens.at(1, 2, 4)).toBeUndefined();
 
     let small = new Tensor([2], Int32Array).setElement([0], 1).setElement([1], 3);
+    expect(() => small.setElement([], 1)).toThrowError();
     expect(small.at(0)).toBe(1);
     expect(small.at(1)).toBe(3);
+    expect(small.view().at(1)).toBe(3);
     
     let odd = new Tensor([31, 17, 5, 7], Int32Array).fill(1).setElement([23, 12, 1, 0], 3);
     expect(odd.at(23, 12, 1, 0)).toBe(3);
@@ -28,6 +30,12 @@ test('tensor fill and index visit', () => {
     
     expect(small.view().toTensor()).toEqual(small);
     expect(odd.view().toTensor()).toEqual(odd);
+
+    let fromData = Tensor.fromArray([1, 2, 3, 4], [2, 2], Uint16Array);
+    expect(fromData.raw).toEqual(new Uint16Array([1, 2, 3, 4]));
+    expect(fromData.view().at(0, 1)).toBe(2);
+    expect(() => fromData.view().at(0, 1, 2)).toThrowError();
+    expect(() => Tensor.fromArray([1, 2, 3, 4], [2, 3], Uint16Array)).toThrowError();
 });
 
 test('vargs extension', () => {
