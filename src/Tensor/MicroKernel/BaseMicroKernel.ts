@@ -16,7 +16,7 @@ class BaseMicroKernel {
     }
     
     invoke(out: TensorView, ...operands: TensorView[]) { }
-    computeShape(...opShapes: number[][]): number[] { return null; }
+    computeShape(...opShapes: number[][]): number[] { throw new Error("BaseMicroKernel should not be called."); return []; }
 
     checkInputs(operands: TensorView[]): [number[][], number] | Error {
         let spec = this.getSpecs();

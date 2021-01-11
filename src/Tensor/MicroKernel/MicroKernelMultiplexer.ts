@@ -6,7 +6,7 @@ class MicroKernelMultiplexer extends BaseMicroKernel {
      * 
      * @returns {BaseMicroKernel[]} 
      */
-    get microKernelList(): BaseMicroKernel[] { return null; }
+    get microKernelList(): BaseMicroKernel[] { throw new Error("Abstract method"); }
 
     static directUseError() { return new Error("Don't call MicroKernelMultiplexer directly without calling dispatch()!"); }
     checkInputs(operands: TensorView[]): [number[][], number] | Error { throw MicroKernelMultiplexer.directUseError(); }
