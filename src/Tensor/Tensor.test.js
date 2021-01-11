@@ -54,3 +54,33 @@ test('0-tensor basics', () => {
     expect(new Tensor([], Int32Array).fill(-3).setElement([], 2).at()).toBe(2);
     expect(new Tensor([], Int32Array).fill(42).view().toTensor().at()).toBe(42);
 });
+
+test('shape operations', () => {
+    expect(
+        Tensor.fromArray([1, 2, 3, 4, 5, 6], [3, 2], Uint8Array)
+        .view().permute(1, 0).toTensor()
+    ).toEqual(
+        Tensor.fromArray([1, 3, 5, 2, 4, 6], [2, 3], Uint8Array)
+    );
+    
+    expect(
+        Tensor.fromArray([0, 1, 2, 3, 4, 5, 6, 7], [2, 2, 2], Uint8Array)
+        .view().permute(2, 1, 0).toTensor()
+    ).toEqual(
+        Tensor.fromArray([0, 4, 2, 6, 1, 5, 3, 7], [2, 2, 2], Uint8Array)
+    );
+    
+    expect(
+        Tensor.fromArray([0, 1, 2, 3, 4, 5, 6, 7], [2, 2, 2], Uint8Array)
+        .view().permute(1, 0, 2).toTensor()
+    ).toEqual(
+        Tensor.fromArray([0, 1, 4, 5, 2, 3, 6, 7], [2, 2, 2], Uint8Array)
+    );
+    
+    expect(
+        Tensor.fromArray([0, 1, 2, 3, 4, 5, 6, 7], [2, 2, 2], Uint8Array)
+        .view().permute(1, 2, 0).toTensor()
+    ).toEqual(
+        Tensor.fromArray([0, 4, 1, 5, 2, 6, 3, 7], [2, 2, 2], Uint8Array)
+    );
+});
