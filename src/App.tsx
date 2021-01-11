@@ -3,6 +3,9 @@ import React from 'react';
 import * as PIXI from 'pixi.js';
 
 class PixiApp extends React.Component {
+    main: PIXI.Application
+    domref: HTMLElement
+
     constructor(props) {
         super(props);
         this.main = new PIXI.Application({width: 800, height: 480, backgroundColor: 0x1099bb});

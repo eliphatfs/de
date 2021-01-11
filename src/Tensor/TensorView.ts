@@ -1,15 +1,15 @@
-import Tensor from './Tensor.js';
-import CollectKernelMultiplex from "./MicroKernel/CollectKernels.js"
+import Tensor from './Tensor'
+import CollectKernelMultiplex from "./MicroKernel/CollectKernels"
+import Conv1DKernel from "./MicroKernel/Conv1DKernel"
+import Util from '../Util'
 
 class TensorView {
-    /**
-     * 
-     * @param {Tensor} tensor 
-     * @param {number} offset 
-     * @param {number[]} shape 
-     * @param {number[]=} strides 
-     */
-    constructor(tensor, offset, shape, strides) {
+    tensor: Tensor
+    offset: number
+    shape: number[]
+    strides: number[]
+
+    constructor(tensor: Tensor, offset: number, shape: number[], strides?: number[]) {
         this.tensor = tensor;
         this.offset = offset;
         this.shape = shape;
@@ -22,26 +22,19 @@ class TensorView {
         return new CollectKernelMultiplex().dispatch(this).tensor;
     }
 
-    /**
-     * @param {number[]} indices 
-     */
-    indicesToIndex(indices) {
+    indicesToIndex(indices: number[]) {
         let idx = this.offset;
         for (let i = 0; i < indices.length; ++i)
             idx += indices[i] * this.strides[i + 1];
         return idx;
     }
 
-    at(...indices) {
+    at(...indices: number[]) {
         if (indices.length != this.shape.length) throw new TypeError("indices for TensorView.at should have same number of dimensions as shape.");
         return this.tensor.raw[this.indicesToIndex(indices)];
     }
 
-    /**
-     * 
-     * @param  {...number} axes 
-     */
-    permute(...axes) {
+    permute(...axes: number[]) {
         if (axes.length !== this.shape.length) throw new Error("Requires " + this.shape.length + " for permute of TensorView, got " + axes.length);
         let newShape = [];
         let newStrides = [this.strides[0]];
@@ -50,6 +43,20 @@ class TensorView {
             newStrides.push(this.strides[axes[i] + 1]);
         }
         return new TensorView(this.tensor, this.offset, newShape, newStrides);
+    }
+
+    conv1d(kernel: TensorView, convAxis: number) {
+        let sigNDims = this.shape.length;
+        let perm = Util.swapToPermutation(sigNDims, convAxis, sigNDims - 1);
+        let exchanged = this.permute(...perm);
+        let kernelBatchStrides = new Array(sigNDims - kernel.shape.length).fill(0);
+        let batchedKernel = new TensorView(
+            kernel.tensor,
+            kernel.offset,
+            exchanged.shape.slice(0, sigNDims - kernel.shape.length).concat(kernel.shape),
+            kernel.strides.slice(0, 1).concat(kernelBatchStrides).concat(kernel.strides.slice(1))
+        );
+        return new Conv1DKernel().dispatch(exchanged, batchedKernel).permute(...perm);
     }
 }
 

@@ -1,10 +1,14 @@
-import Tensor from './Tensor.js'
+import Tensor from './Tensor'
+import TensorView from './TensorView'
 
 test('tensor strides', () => {
     expect(new Tensor([2, 3, 4], Float64Array).strides)
     .toEqual([24, 12, 4, 1]);
     expect(new Tensor([1], Float64Array).strides)
     .toEqual([1, 1]);
+
+    expect(() => new TensorView(new Tensor([5, 4], Float32Array), 0, [5]))
+    .toThrowError();
 });
 
 test('tensor fill and index visit', () => {
@@ -62,6 +66,9 @@ test('shape operations', () => {
     ).toEqual(
         Tensor.fromArray([1, 3, 5, 2, 4, 6], [2, 3], Uint8Array)
     );
+
+    expect(() => new Tensor([2, 4], Float32Array).view().permute(2, 1, 0))
+    .toThrowError();
     
     expect(
         Tensor.fromArray([0, 1, 2, 3, 4, 5, 6, 7], [2, 2, 2], Uint8Array)
@@ -83,4 +90,40 @@ test('shape operations', () => {
     ).toEqual(
         Tensor.fromArray([0, 4, 1, 5, 2, 6, 3, 7], [2, 2, 2], Uint8Array)
     );
+});
+
+test('convolution 1d', () => {
+    expect(
+        Tensor.fromArray([1, 2, 3], [3], Int32Array).view()
+        .conv1d(Tensor.fromArray([1, 2], [2], Int32Array).view(), 0)
+        .toTensor()
+    ).toEqual(
+        Tensor.fromArray([5, 8], [2], Int32Array)
+    );
+
+    expect(
+        Tensor.fromArray([1, 2, 3, 4, 5, 6], [2, 3], Int32Array).view()
+        .conv1d(Tensor.fromArray([1, 2], [2], Int32Array).view(), 1)
+        .toTensor()
+    ).toEqual(
+        Tensor.fromArray([5, 8, 14, 17], [2, 2], Int32Array)
+    );
+
+    expect(
+        Tensor.fromArray([1, 2, 3, 4, 5, 6], [2, 3], Int32Array).view()
+        .conv1d(Tensor.fromArray([1, 2], [2], Int32Array).view(), 0)
+        .toTensor()
+    ).toEqual(
+        Tensor.fromArray([9, 12, 15], [1, 3], Int32Array)
+    );
+
+    expect(() =>
+        Tensor.fromArray([1, 2, 3, 4, 5, 6], [2, 3], Int32Array).view()
+        .conv1d(Tensor.fromArray([1, 2, 3, 4], [4], Int32Array).view(), 0)
+    ).toThrowError();
+
+    expect(() =>
+        Tensor.fromArray([1, 2, 3, 4, 5, 6], [2, 3], Int32Array).view()
+        .conv1d(Tensor.fromArray([1, 2, 3, 4, 5, 6, 7, 8], [4, 2], Int32Array).view(), 0)
+    ).toThrowError();
 });

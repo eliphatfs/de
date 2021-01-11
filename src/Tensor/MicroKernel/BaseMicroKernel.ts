@@ -1,37 +1,24 @@
-import TensorView from '../TensorView.js'
-import Util from '../../Util.js'
-import Tensor from '../Tensor.js';
+import TensorView from '../TensorView'
+import Util from '../../Util'
+import Tensor from '../Tensor'
+
+export type MKSpec = {
+    name: string,
+    operandNDims: number[]
+};
 
 class BaseMicroKernel {
-    /**
-     * @typedef {Object} MKSpec
-     * @property {string} name - name of micro kernel
-     * @property {number[]} operandNDims - #dims of operands
-     * @returns {MKSpec}
-     */
-    getSpecs() {
+    getSpecs(): MKSpec {
         return {
             name: "`Abstract operation`",
             operandNDims: []
         };
     }
-    /**
-     * @param  {TensorView} out 
-     * @param  {...TensorView} operands 
-     */
-    invoke(out, ...operands) { }
-    /**
-     * 
-     * @param {...number[]} opShapes 
-     * @returns {number[]}
-     */
-    computeShape(...opShapes) { return null; }
+    
+    invoke(out: TensorView, ...operands: TensorView[]) { }
+    computeShape(...opShapes: number[][]): number[] { return null; }
 
-    /**
-     * 
-     * @param {TensorView[]} operands 
-     */
-    checkInputs(operands) {
+    checkInputs(operands: TensorView[]): [number[][], number] | Error {
         let spec = this.getSpecs();
         if (spec.operandNDims.length !== operands.length)
             return new Error("The operation " + spec.name + " requires "
@@ -56,30 +43,21 @@ class BaseMicroKernel {
         return [batchDims, ndimDelta[0]];
     }
 
-    /**
-     * 
-     * @param  {...TensorView} operands 
-     */
-    dispatch(...operands) {
+    dispatch(...operands: TensorView[]) {
         let checkResult = this.checkInputs(operands);
         if (checkResult instanceof Error) throw checkResult;
         const [batchDims, ndimDeltaVal] = checkResult;
         let resultShape = batchDims[0].concat(
             this.computeShape(...operands.map((op) => op.shape.slice(ndimDeltaVal)))
         );
+        if (resultShape.some((x) => x <= 0))
+            throw new Error(`Operation ${this.getSpecs().name} results in a negative or zero dimensionality. Operands shape received: ${operands.map((x) => x.shape).join(" & ")}.`)
         let outView = new Tensor(resultShape, operands[0].tensor.arrayType).view();
         this._dispatch(operands, 0, ndimDeltaVal || 0, outView);
         return outView;
     }
 
-    /**
-     * 
-     * @param {TensorView[]} operands 
-     * @param {number} ndim 
-     * @param {number} ndimDelta 
-     * @param {TensorView} outView 
-     */
-    _dispatch(operands, ndim, ndimDelta, outView) {
+    _dispatch(operands: TensorView[], ndim: number, ndimDelta: number, outView: TensorView) {
         if (ndim === ndimDelta) return this.invoke(outView, ...operands);
         for (let i = 0; i < outView.shape[0]; ++i) {
             let subView = new TensorView (

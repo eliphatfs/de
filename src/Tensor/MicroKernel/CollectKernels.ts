@@ -1,47 +1,31 @@
-import BaseMicroKernel from './BaseMicroKernel.js'
-import TensorView from '../TensorView.js'
-import MicroKernelMultiplexer from './MicroKernelMultiplexer.js'
+import BaseMicroKernel, { MKSpec } from './BaseMicroKernel'
+import TensorView from '../TensorView'
+import MicroKernelMultiplexer from './MicroKernelMultiplexer'
 
 class CollectKernelLayer extends BaseMicroKernel {
-    get kndim() { return undefined; }
-    /**
-     * @typedef {Object} MKSpec
-     * @property {string} name - name of micro kernel
-     * @property {number[]} operandNDims - #dims of operands
-     * @returns {MKSpec}
-     */
-    getSpecs() {
+    get kndim(): number { return null; }
+
+    getSpecs(): MKSpec {
         return {
             name: "`Collect`",
             operandNDims: [this.kndim]
         };
     }
-    /**
-     * 
-     * @param {...number[]} opShapes 
-     * @returns {number[]}
-     */
-    computeShape(...opShapes) { return opShapes[0]; }
+    computeShape(...opShapes: number[][]): number[] { return opShapes[0]; }
 }
 
 class CollectKernel0D extends CollectKernelLayer {
     get kndim() { return 0; }
-    /**
-     * @param  {TensorView} out 
-     * @param  {...TensorView} operands 
-     */
-    invoke(out, ...operands) {
+
+    invoke(out: TensorView, ...operands: TensorView[]) {
         out.tensor.raw[out.indicesToIndex([])] = operands[0].at();
     }
 }
 
 class CollectKernel1D extends CollectKernelLayer {
     get kndim() { return 1; }
-    /**
-     * @param  {TensorView} out 
-     * @param  {...TensorView} operands 
-     */
-    invoke(out, ...operands) {
+    
+    invoke(out: TensorView, ...operands: TensorView[]) {
         const s = operands[0];
         const L = out.shape[0];
         const propdec = (view) => ({o: view.offset, s: view.strides[1], r: view.tensor.raw});
@@ -54,11 +38,8 @@ class CollectKernel1D extends CollectKernelLayer {
 
 class CollectKernel2D extends CollectKernelLayer {
     get kndim() { return 2; }
-    /**
-     * @param  {TensorView} out 
-     * @param  {...TensorView} operands 
-     */
-    invoke(out, ...operands) {
+    
+    invoke(out: TensorView, ...operands: TensorView[]) {
         const s = operands[0];
         const [L, H] = out.shape;
         const propdec = (view) => ({o: view.offset, s1: view.strides[1], s2: view.strides[2], r: view.tensor.raw});
