@@ -125,6 +125,15 @@ class TensorView {
         newshape.splice(axis, 1, size);
         return new TensorView(this.tensor, this.offset, newshape, newstrides);
     }
+
+    scalar_like(scalar: number) {
+        return new TensorView(
+            new Tensor([], this.tensor.arrayType).fill(scalar),
+            0,
+            this.shape,
+            [1].concat(new Array(this.shape.length).fill(0))
+        );
+    }
 }
 
 export default TensorView;

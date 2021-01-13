@@ -158,48 +158,40 @@ test('squeeze, unsqueeze and broadcast', () => {
     expect(() => Tensor.fromArray([1, 2, 3], [1, 3], Int32Array).view().broadcast(1, 5)).toThrowError();
 });
 
-test('inplace +-*/', () => {
+test('element-wise +-*/', () => {
+    let c = Tensor.fromArray([1, 2, 3], [3], Int32Array).view();
     expect(
-        Tensor.fromArray([1, 2, 3], [3], Int32Array)
-        .view().mul(
-            Tensor.fromArray([1, 2, 3], [3], Int32Array).view()
-        )
-        .toTensor()
+        c.mul(c).toTensor()
     )
     .toEqual(
         Tensor.fromArray([1, 4, 9], [3], Int32Array)
     );
 
     expect(
-        Tensor.fromArray([1, 2, 3], [3], Int32Array)
-        .view().add(
-            Tensor.fromArray([1, 2, 3], [3], Int32Array).view()
-        )
-        .toTensor()
+        c.add(c).toTensor()
     )
     .toEqual(
         Tensor.fromArray([2, 4, 6], [3], Int32Array)
     );
 
     expect(
-        Tensor.fromArray([1, 2, 3], [3], Int32Array)
-        .view().sub(
-            Tensor.fromArray([1, 2, 3], [3], Int32Array).view()
-        )
-        .toTensor()
+        c.sub(c).toTensor()
     )
     .toEqual(
         Tensor.fromArray([0, 0, 0], [3], Int32Array)
     );
     
     expect(
-        Tensor.fromArray([1, 2, 3], [3], Int32Array)
-        .view().div(
-            Tensor.fromArray([1, 2, 3], [3], Int32Array).view()
-        )
-        .toTensor()
+        c.div(c).toTensor()
     )
     .toEqual(
         Tensor.fromArray([1, 1, 1], [3], Int32Array)
     );
+
+    expect(
+        c.add(c.scalar_like(2)).toTensor()
+    )
+    .toEqual(
+        Tensor.fromArray([3, 4, 5], [3], Int32Array)
+    )
 });
