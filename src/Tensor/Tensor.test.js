@@ -127,3 +127,79 @@ test('convolution 1d', () => {
         .conv1d(Tensor.fromArray([1, 2, 3, 4, 5, 6, 7, 8], [4, 2], Int32Array).view(), 0)
     ).toThrowError();
 });
+
+test('squeeze, unsqueeze and broadcast', () => {
+    expect(
+        Tensor.fromArray([1, 2, 3], [3], Int32Array).view()
+        .unsqueeze(0).toTensor()
+    )
+    .toEqual(
+        Tensor.fromArray([1, 2, 3], [1, 3], Int32Array)
+    );
+
+    expect(
+        Tensor.fromArray([1, 2, 3], [1, 3], Int32Array).view()
+        .unsqueeze(2).squeeze(0).squeeze(1).toTensor()
+    )
+    .toEqual(
+        Tensor.fromArray([1, 2, 3], [3], Int32Array)
+    );
+
+    expect(
+        Tensor.fromArray([1, 2, 3], [1, 3], Int32Array).view()
+        .unsqueeze(2).broadcast(0, 2).broadcast(2, 2).toTensor()
+    )
+    .toEqual(
+        Tensor.fromArray([1, 1, 2, 2, 3, 3, 1, 1, 2, 2, 3, 3], [2, 3, 2], Int32Array)
+    );
+
+    expect(() => Tensor.fromArray([1, 2, 3], [3], Int32Array).view().squeeze(0)).toThrowError();
+    expect(() => Tensor.fromArray([1, 2, 3], [3, 1], Int32Array).view().unsqueeze(3)).toThrowError();
+    expect(() => Tensor.fromArray([1, 2, 3], [1, 3], Int32Array).view().broadcast(1, 5)).toThrowError();
+});
+
+test('inplace +-*/', () => {
+    expect(
+        Tensor.fromArray([1, 2, 3], [3], Int32Array)
+        .view().mul(
+            Tensor.fromArray([1, 2, 3], [3], Int32Array).view()
+        )
+        .toTensor()
+    )
+    .toEqual(
+        Tensor.fromArray([1, 4, 9], [3], Int32Array)
+    );
+
+    expect(
+        Tensor.fromArray([1, 2, 3], [3], Int32Array)
+        .view().add(
+            Tensor.fromArray([1, 2, 3], [3], Int32Array).view()
+        )
+        .toTensor()
+    )
+    .toEqual(
+        Tensor.fromArray([2, 4, 6], [3], Int32Array)
+    );
+
+    expect(
+        Tensor.fromArray([1, 2, 3], [3], Int32Array)
+        .view().sub(
+            Tensor.fromArray([1, 2, 3], [3], Int32Array).view()
+        )
+        .toTensor()
+    )
+    .toEqual(
+        Tensor.fromArray([0, 0, 0], [3], Int32Array)
+    );
+    
+    expect(
+        Tensor.fromArray([1, 2, 3], [3], Int32Array)
+        .view().div(
+            Tensor.fromArray([1, 2, 3], [3], Int32Array).view()
+        )
+        .toTensor()
+    )
+    .toEqual(
+        Tensor.fromArray([1, 1, 1], [3], Int32Array)
+    );
+});

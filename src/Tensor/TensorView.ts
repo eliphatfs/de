@@ -2,6 +2,7 @@ import Tensor from './Tensor'
 import CollectKernelMultiplex from "./MicroKernel/CollectKernels"
 import Conv1DKernel from "./MicroKernel/Conv1DKernel"
 import Util from '../Util'
+import _ from 'lodash'
 
 class TensorView {
     tensor: Tensor
@@ -57,6 +58,72 @@ class TensorView {
             kernel.strides.slice(0, 1).concat(kernelBatchStrides).concat(kernel.strides.slice(1))
         );
         return new Conv1DKernel().dispatch(exchanged, batchedKernel).permute(...perm);
+    }
+
+    add(other: TensorView) {
+        if (!Util.arrayEqual(other.shape, this.shape))
+            throw new Error("Shape mismatch for `add`: " + this.shape + " + " + other.shape);
+        const tensor = this.toTensor();
+        const r1 = tensor.raw, n = tensor.raw.length, r2 = other.toTensor().raw;
+        for (let i = 0; i < n; ++i) r1[i] += r2[i];
+        return tensor.view();
+    }
+
+    mul(other: TensorView) {
+        if (!Util.arrayEqual(other.shape, this.shape))
+            throw new Error("Shape mismatch for `mul`: " + this.shape + " + " + other.shape);
+        const tensor = this.toTensor();
+        const r1 = tensor.raw, n = tensor.raw.length, r2 = other.toTensor().raw;
+        for (let i = 0; i < n; ++i) r1[i] *= r2[i];
+        return tensor.view();
+    }
+
+    sub(other: TensorView) {
+        if (!Util.arrayEqual(other.shape, this.shape))
+            throw new Error("Shape mismatch for `sub`: " + this.shape + " + " + other.shape);
+        const tensor = this.toTensor();
+        const r1 = tensor.raw, n = tensor.raw.length, r2 = other.toTensor().raw;
+        for (let i = 0; i < n; ++i) r1[i] -= r2[i];
+        return tensor.view();
+    }
+
+    div(other: TensorView) {
+        if (!Util.arrayEqual(other.shape, this.shape))
+            throw new Error("Shape mismatch for `div`: " + this.shape + " + " + other.shape);
+        const tensor = this.toTensor();
+        const r1 = tensor.raw, n = tensor.raw.length, r2 = other.toTensor().raw;
+        for (let i = 0; i < n; ++i) r1[i] /= r2[i];
+        return tensor.view();
+    }
+
+    squeeze(axis: number) {
+        if (this.shape[axis] !== 1)
+            throw new Error(`Only size-1 axes can be squeezed! axis: ${axis} shape: ${this.shape}`);
+        let newshape = _.clone(this.shape);
+        let newstrides = _.clone(this.strides);
+        newstrides.splice(axis + 1, 1);
+        newshape.splice(axis, 1);
+        return new TensorView(this.tensor, this.offset, newshape, newstrides);
+    }
+
+    unsqueeze(axis: number) {
+        if (axis < 0 || axis > this.shape.length)
+            throw new Error(`Axis should be >= 0 and <= ndims! got: ${axis} ndims: ${this.shape.length}`);
+        let newshape = _.clone(this.shape);
+        let newstrides = _.clone(this.strides);
+        newstrides.splice(axis + 1, 0, 0);
+        newshape.splice(axis, 0, 1);
+        return new TensorView(this.tensor, this.offset, newshape, newstrides);
+    }
+
+    broadcast(axis: number, size: number) {
+        if (this.shape[axis] !== 1)
+            throw new Error(`Only size-1 axes can be broadcast! axis: ${axis} shape: ${this.shape}`);
+        let newshape = _.clone(this.shape);
+        let newstrides = _.clone(this.strides);
+        newstrides.splice(axis + 1, 1, 0);
+        newshape.splice(axis, 1, size);
+        return new TensorView(this.tensor, this.offset, newshape, newstrides);
     }
 }
 
