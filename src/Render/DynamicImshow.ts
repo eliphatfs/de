@@ -8,6 +8,7 @@ class DynamicImshow {
     constructor(ctx: CanvasRenderingContext2D, data: number[][]) {
         this.data = data;
         this.imageData = ctx.createImageData(data[0].length, data.length);
+        this.imageData.data.fill(255);
         let palette = ['#101010', '#102d5d', '#284e85', '#4e7ab7', '#7ec4e7', '#e4edfc', '#ffffff']//['#000000', '#ffffff']// ['#4ca1af', '#c4e0e5'];
         this.palette = palette.map((x) => Number(x.replace('#', "0x"))).map((x) => [x >> 16, (x % 65536) >> 8, x % 256]);
     }
@@ -34,7 +35,6 @@ class DynamicImshow {
         if (min === undefined || max === undefined) throw Error("Unreachable!");
         if (min === max) max = min + 1;
         let idx = 0;
-        this.imageData.data.fill(255);
         for (let i = 0; i < this.data.length; ++i)
             for (let j = 0; j < this.data[0].length; ++j) {
                 // 0.76110584, 0.89771305, 0.84543495
