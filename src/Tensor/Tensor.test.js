@@ -189,7 +189,7 @@ test('element-wise +-*/', () => {
     );
 
     expect(
-        c.add(c.scalar_like(2)).toTensor()
+        c.add(c.scalarLike(2)).toTensor()
     )
     .toEqual(
         Tensor.fromArray([3, 4, 5], [3], Int32Array)

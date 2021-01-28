@@ -35,6 +35,12 @@ class TensorView {
         return this.tensor.raw[this.indicesToIndex(indices)];
     }
 
+    setElement(indices: number[], value: number) {
+        if (indices.length != this.shape.length) throw new TypeError("indices for TensorView.setElement should have same number of dimensions as shape.");
+        this.tensor.raw[this.indicesToIndex(indices)] = value;
+        return this;
+    }
+
     permute(...axes: number[]) {
         if (axes.length !== this.shape.length) throw new Error("Requires " + this.shape.length + " for permute of TensorView, got " + axes.length);
         let newShape = [];
@@ -126,7 +132,7 @@ class TensorView {
         return new TensorView(this.tensor, this.offset, newshape, newstrides);
     }
 
-    scalar_like(scalar: number) {
+    scalarLike(scalar: number) {
         return new TensorView(
             new Tensor([], this.tensor.arrayType).fill(scalar),
             0,
