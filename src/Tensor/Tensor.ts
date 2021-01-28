@@ -1,12 +1,12 @@
 import TensorView from './TensorView'
 
-type NativeNumberArray = (
+export type NativeNumberArray = (
     Uint8Array | Uint16Array | Uint32Array
     | Int8Array | Int16Array | Int32Array
     | Float32Array | Float64Array
     | Uint8ClampedArray
 );
-type NativeNumberArrayConstructor = {new(len: number): NativeNumberArray};
+export type NativeNumberArrayConstructor = {new(len: number): NativeNumberArray};
 
 class Tensor {
     raw: NativeNumberArray
