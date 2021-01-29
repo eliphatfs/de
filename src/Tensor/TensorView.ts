@@ -66,6 +66,16 @@ class TensorView {
         return new Conv1DKernel().dispatch(exchanged, batchedKernel).permute(...perm);
     }
 
+    pad(sizeBefore: number, sizeAfter: number, axis: number, pad: number = 0) {
+        const perm = Util.swapToPermutation(this.shape.length, 0, axis);
+        let exchanged = this.permute(...perm).toTensor();
+        let elements = exchanged.strides[1];
+        let newTensor = new Tensor([sizeBefore + exchanged.shape[0] + sizeAfter].concat(exchanged.shape.slice(1)), exchanged.arrayType);
+        newTensor.raw.fill(pad);
+        newTensor.raw.set(exchanged.raw, sizeBefore * elements);
+        return newTensor.view().permute(...perm);
+    }
+
     add(other: TensorView) {
         if (!Util.arrayEqual(other.shape, this.shape))
             throw new Error("Shape mismatch for `add`: " + this.shape + " + " + other.shape);
