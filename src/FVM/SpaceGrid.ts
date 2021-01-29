@@ -26,8 +26,8 @@ class SpaceGrid {
         const vus = this.wavespeed * this.wavespeed / (this.unit * this.unit);
         const laplacianKernel = Tensor.fromArray([vus, -2 * vus, vus], [3], Float32Array).view();
         let u2 = this.u0.pad(1, 1, 0, 0).conv1d(laplacianKernel, 0).add(this.u0.pad(1, 1, 1, 0).conv1d(laplacianKernel, 1));
-        this.u1 = this.u1.add(u2.mul(u2.scalarLike(step)));
-        this.u0 = this.u0.add(this.u1.mul(this.u1.scalarLike(step)));
+        this.u1 = this.u1.add(u2.scl(step));
+        this.u0 = this.u0.add(this.u1.scl(step));
         this.t += step;
     }
 }
