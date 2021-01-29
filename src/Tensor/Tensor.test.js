@@ -23,6 +23,7 @@ test('tensor fill and index visit', () => {
     expect(small.at(0)).toBe(1);
     expect(small.at(1)).toBe(3);
     expect(small.view().at(1)).toBe(3);
+    expect(small.view().setElement([1], 4).at(1)).toBe(4);
     
     let odd = new Tensor([31, 17, 5, 7], Int32Array).fill(1).setElement([23, 12, 1, 0], 3);
     expect(odd.at(23, 12, 1, 0)).toBe(3);
@@ -158,7 +159,7 @@ test('squeeze, unsqueeze and broadcast', () => {
     expect(() => Tensor.fromArray([1, 2, 3], [1, 3], Int32Array).view().broadcast(1, 5)).toThrowError();
 });
 
-test('element-wise +-*/', () => {
+test('element-wise +-*/ and pad', () => {
     let c = Tensor.fromArray([1, 2, 3], [3], Int32Array).view();
     expect(
         c.mul(c).toTensor()
@@ -193,5 +194,19 @@ test('element-wise +-*/', () => {
     )
     .toEqual(
         Tensor.fromArray([3, 4, 5], [3], Int32Array)
+    )
+
+    expect(
+        c.scl(20).toTensor()
+    )
+    .toEqual(
+        Tensor.fromArray([20, 40, 60], [3], Int32Array)
+    )
+
+    expect(
+        c.pad(2, 1, 0, -1).toTensor()
+    )
+    .toEqual(
+        Tensor.fromArray([-1, -1, 1, 2, 3, -1], [6], Int32Array)
     )
 });
