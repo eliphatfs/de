@@ -9,18 +9,25 @@ class TensorView {
     offset: number
     shape: number[]
     strides: number[]
+    contiguous: boolean
 
-    constructor(tensor: Tensor, offset: number, shape: number[], strides?: number[]) {
+    constructor(tensor: Tensor, offset: number, shape: number[], strides?: number[], contiguous?: boolean) {
         this.tensor = tensor;
         this.offset = offset;
         this.shape = shape;
         if (strides === undefined) this.strides = this.tensor.strides;
         else this.strides = strides;
         if (this.strides.length !== this.shape.length + 1) throw new Error("Strides and shape for TensorView does not match. (strides len should be shape len + 1)");
+        this.contiguous = contiguous ?? false;
     }
 
     toTensor() {
-        return new CollectKernelMultiplex().dispatch(this).tensor;
+        if (this.contiguous) {
+            let newTensor = new Tensor(this.shape, this.tensor.arrayType);
+            newTensor.raw.set(this.tensor.raw);
+            return newTensor;
+        }
+        else return new CollectKernelMultiplex().dispatch(this).tensor;
     }
 
     indicesToIndex(indices: number[]) {
@@ -91,6 +98,13 @@ class TensorView {
         const tensor = this.toTensor();
         const r1 = tensor.raw, n = tensor.raw.length, r2 = other.toTensor().raw;
         for (let i = 0; i < n; ++i) r1[i] *= r2[i];
+        return tensor.view();
+    }
+
+    scl(scalar: number) {
+        const tensor = this.toTensor();
+        const r = tensor.raw, n = tensor.raw.length;
+        for (let i = 0; i < n; ++i) r[i] *= scalar;
         return tensor.view();
     }
 

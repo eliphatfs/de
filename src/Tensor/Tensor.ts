@@ -46,7 +46,7 @@ class Tensor {
     
     fill(num: number) { this.raw.fill(num); return this; }
 
-    view() { return new TensorView(this, 0, this.shape); }
+    view() { return new TensorView(this, 0, this.shape, undefined, true); }
 
     static fromArray(flatArray: number[], shape: number[], arrayType: NativeNumberArrayConstructor) {
         let tensor = new Tensor(shape, arrayType);
