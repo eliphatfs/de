@@ -43,17 +43,6 @@ test('tensor fill and index visit', () => {
     expect(() => Tensor.fromArray([1, 2, 3, 4], [2, 3], Uint16Array)).toThrowError();
 });
 
-test('vargs extension', () => {
-    class Foo {
-        bar(...args) { return args; }
-    }
-
-    class Bar extends Foo {
-        bar(a, b) { return super.bar(a, b); }
-    }
-    expect(new Bar().bar(1, 2)).toEqual([1, 2]);
-});
-
 test('0-tensor basics', () => {
     expect(new Tensor([], Int32Array).fill(5).at()).toBe(5);
     expect(new Tensor([], Int32Array).fill(-3).setElement([], 2).at()).toBe(2);

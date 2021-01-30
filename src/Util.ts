@@ -1,10 +1,5 @@
 class Util {
-    /**
-     * 
-     * @param {number[] | string[]} array1 
-     * @param {number[] | string[]} array2 
-     */
-    static arrayEqual(array1, array2) {
+    static arrayEqual(array1: number[] | string[], array2: number[] | string[]) {
         const n = array1.length;
         if (n !== array2.length) return false;
         for (let i = 0; i < n; ++i)
@@ -12,7 +7,7 @@ class Util {
         return true;
     }
 
-    static swapToPermutation(n, axis1, axis2) {
+    static swapToPermutation(n: number, axis1: number, axis2: number) {
         let perm = [];
         for (let i = 0; i < n; ++i) perm.push(i);
         perm[axis1] = axis2; perm[axis2] = axis1;
