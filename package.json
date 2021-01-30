@@ -1,43 +1,21 @@
 {
-  "name": "de",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@material-ui/core": "^4.11.2",
-    "@material-ui/icons": "^4.11.2",
-    "@testing-library/jest-dom": "^5.11.4",
-    "@testing-library/react": "^11.1.0",
-    "@testing-library/user-event": "^12.1.10",
-    "@types/lodash": "^4.14.167",
-    "lodash": "^4.17.20",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
-    "react-scripts": "4.0.1",
-    "typescript": "^4.1.3",
-    "web-vitals": "^0.2.4"
-  },
+  "name": "de-vanilla",
+  "version": "1.0.0",
+  "author": "eliphatfs",
+  "license": "MIT",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "build": "shx rm -rf dist/*.* && tsc --noEmit && parcel build src/index.html --no-source-maps",
+    "start": "parcel src/index.html --open"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "dependencies": {
+    "@types/jest": "^26.0.20",
+    "@types/lodash": "^4.14.168",
+    "jest": "^26.6.3",
+    "lodash": "^4.17.20",
+    "parcel-bundler": "^1.12.4",
+    "purecss": "^2.0.5",
+    "shx": "^0.3.3",
+    "ts-jest": "^26.5.0",
+    "typescript": "^4.1.3"
   }
 }
