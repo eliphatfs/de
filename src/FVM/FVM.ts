@@ -1,5 +1,5 @@
 import Tensor from "../Tensor/Tensor"
-import TensorView from "../Tensor/TensorView";
+import TensorView from "../Tensor/TensorView"
 
 class SpaceGrid {
     u0: TensorView
