@@ -1,4 +1,4 @@
-import _ from "lodash"
+import Utils from '../Util';
 import {NativeNumberArray} from "../Tensor/Tensor"
 
 class DynamicImshowTyped {
@@ -19,7 +19,7 @@ class DynamicImshowTyped {
 
     genPaletteLUT() {
         const palette = this.palette;
-        return _.range(0.0, 1.0, 1.0 / 1024.0)
+        return Utils.range(0.0, 1.0, 1.0 / 1024.0)
         .map((v) => {
             const unif = v * (palette.length - 1);
             const C1 = palette[Math.floor(unif)];

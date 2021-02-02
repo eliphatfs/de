@@ -1,4 +1,4 @@
-import _ from "lodash"
+import Utils from '../Util';
 
 class DynamicImshow {
     data: number[][]
@@ -17,7 +17,7 @@ class DynamicImshow {
 
     genPaletteLUT() {
         const palette = this.palette;
-        return _.range(0.0, 1.0, 1.0 / 1024.0)
+        return Utils.range(0.0, 1.0, 1.0 / 1024.0)
         .map((v) => {
             const unif = v * (palette.length - 1);
             const C1 = palette[Math.floor(unif)];
@@ -33,8 +33,8 @@ class DynamicImshow {
     }
 
     render(ctx: CanvasRenderingContext2D) {
-        const min = -1; // _.min(this.data.map((x) => _.min(x)));
-        let max = 1; // _.max(this.data.map((x) => _.max(x)));
+        const min = -1; // min(this.data.map((x) => min(x)));
+        let max = 1; // max(this.data.map((x) => max(x)));
         if (min === undefined || max === undefined) throw Error("Unreachable!");
         if (min === max) max = min + 1;
         let idx = 0;

@@ -13,6 +13,12 @@ class Util {
         perm[axis1] = axis2; perm[axis2] = axis1;
         return perm;
     }
+
+    static range(start: number, end: number, step: number = 1) {
+        let arr = [];
+        for (let i = start; i < end; i += step) arr.push(i);
+        return arr;
+    }
 }
 
 export default Util;

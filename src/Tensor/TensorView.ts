@@ -2,7 +2,6 @@ import Tensor from './Tensor'
 import CollectKernelMultiplex from "./MicroKernel/CollectKernels"
 import Conv1DKernel from "./MicroKernel/Conv1DKernel"
 import Util from '../Util'
-import _ from 'lodash'
 
 class TensorView {
     tensor: Tensor
@@ -129,8 +128,8 @@ class TensorView {
     squeeze(axis: number) {
         if (this.shape[axis] !== 1)
             throw new Error(`Only size-1 axes can be squeezed! axis: ${axis} shape: ${this.shape}`);
-        let newshape = _.clone(this.shape);
-        let newstrides = _.clone(this.strides);
+        let newshape = [...this.shape];
+        let newstrides = [...this.strides];
         newstrides.splice(axis + 1, 1);
         newshape.splice(axis, 1);
         return new TensorView(this.tensor, this.offset, newshape, newstrides);
@@ -139,8 +138,8 @@ class TensorView {
     unsqueeze(axis: number) {
         if (axis < 0 || axis > this.shape.length)
             throw new Error(`Axis should be >= 0 and <= ndims! got: ${axis} ndims: ${this.shape.length}`);
-        let newshape = _.clone(this.shape);
-        let newstrides = _.clone(this.strides);
+        let newshape = [...this.shape];
+        let newstrides = [...this.strides];
         newstrides.splice(axis + 1, 0, 0);
         newshape.splice(axis, 0, 1);
         return new TensorView(this.tensor, this.offset, newshape, newstrides);
@@ -149,8 +148,8 @@ class TensorView {
     broadcast(axis: number, size: number) {
         if (this.shape[axis] !== 1)
             throw new Error(`Only size-1 axes can be broadcast! axis: ${axis} shape: ${this.shape}`);
-        let newshape = _.clone(this.shape);
-        let newstrides = _.clone(this.strides);
+        let newshape = [...this.shape];
+        let newstrides = [...this.strides];
         newstrides.splice(axis + 1, 1, 0);
         newshape.splice(axis, 1, size);
         return new TensorView(this.tensor, this.offset, newshape, newstrides);
