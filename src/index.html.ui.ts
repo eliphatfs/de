@@ -5,6 +5,7 @@ const waveSrcTemplate = document.getElementById("wave-src-template")!;
 
 document.getElementById("play-button")!.onclick = () => { window.fvm.running = true; };
 document.getElementById("pause-button")!.onclick = () => { window.fvm.running = false; };
+document.getElementById("restore-button")!.onclick = () => { window.fvm.running = false; window.fvm.reset_trigger = true; };
 
 window.addEventListener("mousemove", (ev) => {
     const [xr, yr] = Util.relativePosition([ev.clientX, ev.clientY], editContainer);
