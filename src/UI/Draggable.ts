@@ -8,7 +8,7 @@ export function registerDraggable(element: HTMLElement) {
     document.addEventListener("mouseup", (e) => {
         dragging = false;
     });
-    element.addEventListener("mousemove", (e) => {
+    document.addEventListener("mousemove", (e) => {
         if (!dragging) return;
         e.preventDefault();
         element.style.top = (element.offsetTop - (pos[1] - e.clientY)) + "px";

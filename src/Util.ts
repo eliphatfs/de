@@ -1,4 +1,31 @@
 class Util {
+    static relativePosition(clientPos: [number, number], elem: HTMLElement): [number, number] {
+        const [x, y] = clientPos;
+        return [
+            x - elem.getBoundingClientRect().left,
+            y - elem.getBoundingClientRect().top
+        ];
+    }
+    static pivot(clientPos: [number, number], elem: HTMLElement, pivot: [number, number] = [0.5, 0.5]): [number, number] {
+        const [x, y] = clientPos;
+        return [
+            x - elem.getBoundingClientRect().width * pivot[0],
+            y - elem.getBoundingClientRect().height * pivot[1]
+        ];
+    }
+    static cooToPivot([x, y]: [number, number], elem: HTMLElement): [number, number] {
+        return [
+            x / elem.getBoundingClientRect().width,
+            y / elem.getBoundingClientRect().height
+        ];
+    }
+    static setXYAttributes([x, y]: [number, number], elem: HTMLElement) {
+        elem.setAttribute("x", x.toString());
+        elem.setAttribute("y", y.toString());
+    }
+    static setOpacityAttribute(op: number, elem: HTMLElement) {
+        elem.setAttribute("opacity", op.toString());
+    }
     static arrayEqual(array1: number[] | string[], array2: number[] | string[]) {
         const n = array1.length;
         if (n !== array2.length) return false;

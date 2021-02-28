@@ -5,10 +5,39 @@
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <div style="display: flex; justify-content: center;">
-        <button class="pure-button">Test Button</button>
-        <canvas id="main-canvas" width="256" height="256"></canvas>
+    <div id="bg" class="bg-div"></div>
+    <div id="menu-toolbar" class="menu-toolbar-box pure-button-group">
+        <button class="pure-button"><img src='./Resources/MdiFolderOpenOutline.svg' /></button>
+        <button class="pure-button"><img src='./Resources/IcTwotoneSaveAlt.svg' /></button>
+        <hr />
+        <button class="pure-button"><img src='./Resources/FluentCursor20Filled.svg' /></button>
+        <button class="pure-button pure-button-active"><img src='./Resources/IcTwotoneWifiTethering.svg' /></button>
+        <hr />
+        <button class="pure-button" id="play-button"><img src='./Resources/IcTwotonePlayArrow.svg' /></button>
+        <button class="pure-button" id="pause-button"><img src='./Resources/IcTwotonePause.svg' /></button>
+        <button class="pure-button"><img src='./Resources/IcTwotoneRestore.svg' /></button>
     </div>
-    <script src="index.html.ts"></script>
+    <div class="center-in-viewport" id="center-container">
+        <div id="center-flex" class="flex-container">
+            <div class="panel-box left-box" title="Editing panel">
+                <svg id="edit-container" class="edit-container" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <use id="wave-src-focus" href="./Resources/IcTwotoneWifiTethering.svg#main" opacity="0.25" width="24" height="24" fill="#000000" />
+                    <use id="wave-src-template" href="./Resources/IcTwotoneWifiTethering.svg#main" opacity="0" width="24" height="24" fill="#000000" />
+                </svg>
+            </div>
+            <span style="padding: 2em"></span>
+            <canvas id="main-canvas" width="256" height="256" class="panel-box right-box" title="Results panel"></canvas>
+            <div id="colorbar-container" style="margin-left: 1em;">
+                <div id="colorbar-box-main" class="colorbar-box" title="Color bar"></div>
+                <div id="colorbar-labels" style="height: 256px; display: inline-block; position: absolute;">
+                    <div style="position: absolute; top: 0; left: 0.5em;">1.0</div>
+                    <div style="position: absolute; bottom: 0; left: 0.5em;" on>-1.0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="index.html.ui.ts"></script>
+    <script src="index.html.logic.ts"></script>
+    <script src="UI/Draggable.ts"></script>
 </body>
 </html>
