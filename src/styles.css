@@ -13,6 +13,11 @@ body {
     text-align: justify;
 }
 
+.highlight-color {
+    fill: #2A7CFC;
+    color: #2A7CFC;
+}
+
 .bg-div {
     position: fixed;
     background: linear-gradient(rgb(242, 242, 242), rgb(242, 242, 242));
