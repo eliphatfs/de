@@ -13,7 +13,8 @@ window.addEventListener("mousemove", (ev) => {
     Util.setXYAttributes([xp, yp], waveSrcFocus);
 });
 
-waveSrcFocus.onmousedown = () => {
+waveSrcFocus.onmousedown = (ev) => {
+    if (ev.button != 0) return;
     const x = parseFloat(waveSrcFocus.getAttribute("x")!);
     const y = parseFloat(waveSrcFocus.getAttribute("y")!);
     window.fvm.sources.push(Util.cooToPivot([y, x], editContainer));
