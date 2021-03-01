@@ -1,6 +1,6 @@
-import { isThisTypeNode } from "typescript"
 import Tensor from "../Tensor/Tensor"
 import TensorView from "../Tensor/TensorView"
+import FVMWaveSource from './FVMWaveSource'
 
 class SpaceGrid {
     u0: TensorView
@@ -10,9 +10,9 @@ class SpaceGrid {
     dim: number
     wavespeed: number
     t: number
-    sources: [number, number][]
+    sources: FVMWaveSource[]
 
-    constructor(dim: number, targetSize: number, wavespeed: number, sources: [number, number][]) {
+    constructor(dim: number, targetSize: number, wavespeed: number, sources: FVMWaveSource[]) {
         this.u0 = new Tensor([dim, dim], Float32Array).view();
         this.u1 = new Tensor([dim, dim], Float32Array).view();
         this.dim = dim;
@@ -24,7 +24,7 @@ class SpaceGrid {
     }
 
     evolve(step: number) {
-        for (let [x, y] of this.sources) {
+        for (let {x, y} of this.sources) {
             x = x <= 0 ? 1.1 / this.dim : x >= 1 ? 1 - 1.9 / this.dim : x;
             y = y <= 0 ? 1.1 / this.dim : y >= 1 ? 1 - 1.9 / this.dim : y;
             this.u0.setElement([Math.floor(x * this.dim), Math.floor(y * this.dim)], Math.sin(this.t * 2000));

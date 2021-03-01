@@ -1,11 +1,12 @@
 import FVM from './FVM/FVM'
+import FVMWaveSource from './FVM/FVMWaveSource';
 import DynamicImshowTyped from './Render/DynamicImshowTyped'
 
 declare global {
   interface Window {
     fvm: {
         running: boolean;
-        sources: [number, number][];
+        sources: FVMWaveSource[];
         reset_trigger: boolean;
     }
   }

@@ -1,11 +1,31 @@
 import Util from './Util'
+import FVMWaveSource from './FVM/FVMWaveSource'
 const editContainer = document.getElementById("edit-container")!;
 const waveSrcFocus = document.getElementById("wave-src-focus")!;
 const waveSrcTemplate = document.getElementById("wave-src-template")!;
 const waveSrcButton = document.getElementById("wave-src-button")!;
 const gpEditButton = document.getElementById("gp-edit-button")!;
 
+interface IEditable {
+    view: HTMLElement
+    editWindow: () => void
+}
+
+class Editable<T> implements IEditable {
+    view: HTMLElement
+    target: T
+    constructor(view: HTMLElement, target: T) { this.view = view; this.target = target; }
+    editWindow() { }
+}
+
+class WaveSourceEditable extends Editable<FVMWaveSource> {
+    editWindow() {
+        // TODO
+    }
+}
+
 let state: UIState;
+let editables: IEditable[] = [];
 
 class UIState {
     enter() {}
@@ -20,6 +40,20 @@ class UIState {
 
 class GPEdit extends UIState {
     static instance = new GPEdit();
+    enter() {
+        gpEditButton.classList.add("pure-button-active");
+        for (let editable of editables) {
+            editable.view.onmouseenter = () => editable.view.classList.add("highlight-color");
+            editable.view.onmouseleave = () => editable.view.classList.remove("highlight-color");
+        }
+    }
+    exit() {
+        gpEditButton.classList.remove("pure-button-active");
+        for (let editable of editables) {
+            editable.view.onmouseenter = null;
+            editable.view.onmouseleave = null;
+        }
+    }
 }
 
 class CreateWaveSource extends UIState {
@@ -44,11 +78,13 @@ class CreateWaveSource extends UIState {
         if (ev.button != 0) return;
         const x = parseFloat(waveSrcFocus.getAttribute("x")!);
         const y = parseFloat(waveSrcFocus.getAttribute("y")!);
-        window.fvm.sources.push(Util.cooToPivot([y, x], editContainer));
-        const newSrc = editContainer.appendChild(waveSrcTemplate.cloneNode()) as HTMLElement;
+        const sourceObj = new FVMWaveSource(...Util.cooToPivot([y, x], editContainer));
+        window.fvm.sources.push(sourceObj);
+        const newSrc = editContainer.appendChild(waveSrcTemplate.cloneNode(true)) as HTMLElement;
         newSrc.id = "";
         Util.setXYAttributes([x, y], newSrc);
         Util.setOpacityAttribute(1, newSrc);
+        editables.push(new WaveSourceEditable(newSrc, sourceObj));
     }
 }
 
