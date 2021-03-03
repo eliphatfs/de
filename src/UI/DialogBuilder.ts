@@ -41,12 +41,13 @@ class DialogBuilder {
         return this;
     }
 
-    rowForm(title?: string) {
+    rowForm(options: { title?: string, compact?: boolean } = {}) {
         let f = document.createElement("form");
         let s = document.createElement("fieldset");
         f.appendChild(s);
         f.className = "pure-form";
-        if (title) s.appendChild(document.createElement("legend")).innerHTML = title;
+        if (!options.compact) f.classList.add("pure-form-stacked");
+        if (options.title) s.appendChild(document.createElement("legend")).innerHTML = options.title;
         this.head = s;
         this.dialog.appendChild(f);
         return this;
@@ -101,6 +102,7 @@ class DialogBuilder {
             let lab = document.createElement("label");
             if (!id) id = "dialog-builder-generated-" + Math.random().toString();
             lab.htmlFor = id;
+            lab.innerHTML = label;
             this.head.appendChild(lab);
         }
         this.onCommit.push(() => { if(onCommit) onCommit(tif.value); });
