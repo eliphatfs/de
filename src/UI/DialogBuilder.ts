@@ -1,5 +1,3 @@
-import { TokenFlags } from "typescript";
-
 export class DialogBuilderDataDelegate {
     dialog: HTMLElement
     onCommit: (() => void)[]
