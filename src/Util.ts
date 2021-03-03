@@ -34,6 +34,12 @@ class Util {
         return true;
     }
 
+    static fixNumericString(current: string, defaultVal: number = 0) {
+        if (!isNaN(current as any)) return current;
+        if (!isNaN(parseFloat(current))) return parseFloat(current).toString();
+        return defaultVal.toString();
+    }
+
     static swapToPermutation(n: number, axis1: number, axis2: number) {
         let perm = [];
         for (let i = 0; i < n; ++i) perm.push(i);

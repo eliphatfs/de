@@ -1,5 +1,6 @@
 import Util from './Util'
 import FVMWaveSource from './FVM/FVMWaveSource'
+import DialogBuilder from './UI/DialogBuilder';
 const editContainer = document.getElementById("edit-container")!;
 const waveSrcFocus = document.getElementById("wave-src-focus")!;
 const waveSrcTemplate = document.getElementById("wave-src-template")!;
@@ -20,7 +21,17 @@ class Editable<T> implements IEditable {
 
 class WaveSourceEditable extends Editable<FVMWaveSource> {
     editWindow() {
-        // TODO
+        new DialogBuilder()
+        .rowForm("Wave source")
+        .rowDiv()
+        .button("Close", (delegate) => delegate.close())
+        .space()
+        .button("Delete", (delegate) => {
+            this.view.remove();
+            window.fvm.sources.splice(window.fvm.sources.indexOf(this.target), 1);
+            delegate.close();
+        }, { color: "#e05f5f", textColor: "white" })
+        .show();
     }
 }
 
@@ -45,6 +56,7 @@ class GPEdit extends UIState {
         for (let editable of editables) {
             editable.view.onmouseenter = () => editable.view.classList.add("highlight-color");
             editable.view.onmouseleave = () => editable.view.classList.remove("highlight-color");
+            editable.view.onclick = () => editable.editWindow();
         }
     }
     exit() {
@@ -52,6 +64,7 @@ class GPEdit extends UIState {
         for (let editable of editables) {
             editable.view.onmouseenter = null;
             editable.view.onmouseleave = null;
+            editable.view.onclick = null;
         }
     }
 }
