@@ -81,9 +81,10 @@ class DialogBuilder {
         return this.span(" ");
     }
 
-    span(text: string) {
+    span(text: string, ...extraClasses: string[]) {
         let spn = document.createElement("span");
         spn.innerHTML = text;
+        for (let c of extraClasses) spn.classList.add(c);
         this.head.appendChild(spn);
         return this;
     }
