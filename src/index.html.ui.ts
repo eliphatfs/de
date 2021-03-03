@@ -20,12 +20,39 @@ class Editable<T> implements IEditable {
 }
 
 class WaveSourceEditable extends Editable<FVMWaveSource> {
+    validNormalizedValue(s: string) {
+        let f = Util.fixNumericString(s);
+        if (parseFloat(f) < 0) return "0";
+        if (parseFloat(f) > 1) return "1";
+        return f;
+    }
+    refreshView() {
+        Util.setXYAttributesPivotted(Util.pivotToCoo([this.target.x, this.target.y], this.view.parentElement!), this.view);
+    }
     editWindow() {
         new DialogBuilder()
-        .rowForm("Wave source")
+        .rowForm({ title: "Wave source" })
+        .textInputField({
+            label: "X",
+            initial: this.target.x.toString(),
+            onValidate: this.validNormalizedValue,
+            onCommit: (s) => {
+                this.target.x = parseFloat(s);
+                this.refreshView();
+            }
+        })
+        .textInputField({
+            label: "Y",
+            initial: this.target.y.toString(),
+            onValidate: this.validNormalizedValue,
+            onCommit: (s) => {
+                this.target.y = parseFloat(s);
+                this.refreshView();
+            }
+        })
         .rowDiv()
-        .button("Close", (delegate) => delegate.close())
-        .space()
+        .button("OK", (delegate) => delegate.commitFields().close(), { primary: true }).space()
+        .button("Cancel", (delegate) => delegate.close()).space()
         .button("Delete", (delegate) => {
             this.view.remove();
             window.fvm.sources.splice(window.fvm.sources.indexOf(this.target), 1);
@@ -84,18 +111,16 @@ class CreateWaveSource extends UIState {
     }
     trackSrcFocus(ev: MouseEvent) {
         const [xr, yr] = Util.relativePosition([ev.clientX, ev.clientY], editContainer);
-        const [xp, yp] = Util.pivot([xr, yr], waveSrcFocus, [0.5, 0.5]);
-        Util.setXYAttributes([xp, yp], waveSrcFocus);
+        Util.setXYAttributesPivotted([xr, yr], waveSrcFocus);
     }
     waveSrcDown(ev: MouseEvent) {
         if (ev.button != 0) return;
-        const x = parseFloat(waveSrcFocus.getAttribute("x")!);
-        const y = parseFloat(waveSrcFocus.getAttribute("y")!);
-        const sourceObj = new FVMWaveSource(...Util.cooToPivot([y, x], editContainer));
+        const [x, y] = Util.getXYAttributesPivotted(waveSrcFocus);
+        const sourceObj = new FVMWaveSource(...Util.cooToPivot([x, y], editContainer));
         window.fvm.sources.push(sourceObj);
         const newSrc = editContainer.appendChild(waveSrcTemplate.cloneNode(true)) as HTMLElement;
         newSrc.id = "";
-        Util.setXYAttributes([x, y], newSrc);
+        Util.setXYAttributesPivotted([x, y], newSrc);
         Util.setOpacityAttribute(1, newSrc);
         editables.push(new WaveSourceEditable(newSrc, sourceObj));
     }
