@@ -24,10 +24,10 @@ class SpaceGrid {
     }
 
     evolve(step: number) {
-        for (let {x, y} of this.sources) {
+        for (let {x, y, strength, freq} of this.sources) {
             x = x <= 0 ? 1.1 / this.dim : x >= 1 ? 1 - 1.9 / this.dim : x;
             y = y <= 0 ? 1.1 / this.dim : y >= 1 ? 1 - 1.9 / this.dim : y;
-            this.u0.setElement([Math.floor(y * this.dim), Math.floor(x * this.dim)], Math.sin(this.t * 2000));
+            this.u0.setElement([Math.floor(y * this.dim), Math.floor(x * this.dim)], Math.sin(this.t * freq) * strength);
         }
         const vus = this.wavespeed * this.wavespeed / (this.unit * this.unit);
         const laplacianKernel = Tensor.fromArray([vus, -2 * vus, vus], [3], Float32Array).view();

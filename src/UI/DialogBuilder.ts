@@ -51,6 +51,17 @@ class DialogBuilder {
         return this;
     }
 
+    headToGrid() {
+        while (!this.head.classList.contains("pure-g") && this.head.parentElement && this.head != this.dialog)
+            this.head = this.head.parentElement;
+        return this;
+    }
+
+    headUp() {
+        this.head = this.head.parentElement!;
+        return this;
+    }
+
     grid() {
         let g = document.createElement("div");
         g.className = "pure-g";
@@ -62,8 +73,7 @@ class DialogBuilder {
     gridUnit(num: number, denom: number) {
         let g = document.createElement("div");
         g.className = "pure-u-" + num + "-" + denom;
-        while (!this.head.classList.contains("pure-g") && this.head.parentElement && this.head != this.dialog)
-            this.head = this.head.parentElement;
+        this.headToGrid();
         this.head.appendChild(g);
         this.head = g;
         return this;
@@ -107,8 +117,7 @@ class DialogBuilder {
 
     textInputField(options: {
         onCommit?: (contents: string) => void, onValidate?: (contents: string) => string | null, initial?: string, placeholder?: string, id?: string, label?: string
-    })
-    {
+    }) {
         let {onCommit, onValidate, initial, placeholder, id, label} = options;
         let tif = document.createElement("input");
         tif.type = "text";

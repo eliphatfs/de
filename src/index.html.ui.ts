@@ -32,7 +32,8 @@ class WaveSourceEditable extends Editable<FVMWaveSource> {
     editWindow() {
         new DialogBuilder()
         .rowForm({ title: "Wave source" })
-        .textInputField({
+        .grid()
+        .gridUnit(1, 2).textInputField({
             label: "X",
             initial: this.target.x.toString(),
             onValidate: this.validNormalizedValue,
@@ -41,13 +42,29 @@ class WaveSourceEditable extends Editable<FVMWaveSource> {
                 this.refreshView();
             }
         })
-        .textInputField({
+        .gridUnit(1, 2).textInputField({
             label: "Y",
             initial: this.target.y.toString(),
             onValidate: this.validNormalizedValue,
             onCommit: (s) => {
                 this.target.y = parseFloat(s);
                 this.refreshView();
+            }
+        })
+        .gridUnit(1, 2).textInputField({
+            label: "Strength (m/s^2)",
+            initial: this.target.strength.toString(),
+            onValidate: Util.fixNumericString,
+            onCommit: (s) => {
+                this.target.strength = parseFloat(s);
+            }
+        })
+        .gridUnit(1, 2).textInputField({
+            label: "Frequency (Hz)",
+            initial: this.target.freq.toString(),
+            onValidate: Util.fixNumericString,
+            onCommit: (s) => {
+                this.target.freq = parseFloat(s);
             }
         })
         .rowDiv()
@@ -116,7 +133,7 @@ class CreateWaveSource extends UIState {
     waveSrcDown(ev: MouseEvent) {
         if (ev.button != 0) return;
         const [x, y] = Util.getXYAttributesPivotted(waveSrcFocus);
-        const sourceObj = new FVMWaveSource(...Util.cooToPivot([x, y], editContainer));
+        const sourceObj = new FVMWaveSource(...Util.cooToPivot([x, y], editContainer), 1, 2000);
         window.fvm.sources.push(sourceObj);
         const newSrc = editContainer.appendChild(waveSrcTemplate.cloneNode(true)) as HTMLElement;
         newSrc.id = "";
