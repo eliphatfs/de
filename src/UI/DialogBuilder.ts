@@ -51,6 +51,24 @@ class DialogBuilder {
         return this;
     }
 
+    grid() {
+        let g = document.createElement("div");
+        g.className = "pure-g";
+        this.head.appendChild(g);
+        this.head = g;
+        return this;
+    }
+
+    gridUnit(num: number, denom: number) {
+        let g = document.createElement("div");
+        g.className = "pure-u-" + num + "-" + denom;
+        while (!this.head.classList.contains("pure-g") && this.head.parentElement && this.head != this.dialog)
+            this.head = this.head.parentElement;
+        this.head.appendChild(g);
+        this.head = g;
+        return this;
+    }
+
     splitter(opacity: number = 0.2) {
         let hr = document.createElement("hr");
         hr.style.opacity = opacity.toString();
@@ -94,6 +112,7 @@ class DialogBuilder {
         let {onCommit, onValidate, initial, placeholder, id, label} = options;
         let tif = document.createElement("input");
         tif.type = "text";
+        tif.classList.add("pure-u-23-24");
         if (id) tif.id = id;
         if (placeholder) tif.placeholder = placeholder;
         if (initial) tif.value = initial;
