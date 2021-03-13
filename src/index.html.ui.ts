@@ -52,7 +52,7 @@ class WaveSourceEditable extends Editable<FVMWaveSource> {
             }
         })
         .gridUnit(1, 2).textInputField({
-            label: "Strength (m/s^2)",
+            label: "Amplitude (m)",
             initial: this.target.strength.toString(),
             onValidate: Util.fixNumericString,
             onCommit: (s) => {
