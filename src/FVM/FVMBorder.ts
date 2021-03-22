@@ -1,6 +1,6 @@
 export enum BorderType {
-    Reflexive,
-    Absorbing
+    Reflexive = 0,
+    Absorbing = 1,
 }
 
 class FVMBorder {
