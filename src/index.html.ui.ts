@@ -1,6 +1,7 @@
 import Util from './Util'
 import FVMWaveSource from './FVM/FVMWaveSource'
 import DialogBuilder from './UI/DialogBuilder';
+import { BorderType } from './FVM/FVMBorder';
 const editContainer = document.getElementById("edit-container")!;
 const waveSrcFocus = document.getElementById("wave-src-focus")!;
 const waveSrcTemplate = document.getElementById("wave-src-template")!;
@@ -148,6 +149,20 @@ state.enter();
 
 gpEditButton.onclick = () => { state.transition(GPEdit.instance); };
 waveSrcButton.onclick = () => { state.transition(CreateWaveSource.instance); };
+
+document.getElementById("wave-project-settings-button")!.onclick = () => {
+    new DialogBuilder().rowForm({ title: "Volume options" })
+    .grid().gridUnit(1, 1).dropdown({
+        items: ["Reflexive", "Absorbing"],
+        initial: window.fvm.borderType as number,
+        label: "Border",
+        onCommit: (idx) => window.fvm.borderType = idx as BorderType
+    })
+    .rowDiv()
+    .button("OK", (delegate) => delegate.commitFields().close(), { primary: true }).space()
+    .button("Cancel", (delegate) => delegate.close())
+    .show();
+};
 
 document.getElementById("play-button")!.onclick = () => { window.fvm.running = true; };
 document.getElementById("pause-button")!.onclick = () => { window.fvm.running = false; };
