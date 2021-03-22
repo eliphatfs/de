@@ -122,7 +122,6 @@ class DialogBuilder {
         let tif = document.createElement("input");
         tif.type = "text";
         tif.classList.add("pure-u-23-24");
-        if (id) tif.id = id;
         if (placeholder) tif.placeholder = placeholder;
         if (initial) tif.value = initial;
         if (label) {
@@ -132,6 +131,7 @@ class DialogBuilder {
             lab.innerHTML = label;
             this.head.appendChild(lab);
         }
+        if (id) tif.id = id;
         this.onCommit.push(() => { if(onCommit) onCommit(tif.value); });
         tif.onblur = () => {
             if (onValidate) {
@@ -140,6 +140,28 @@ class DialogBuilder {
             }
         }
         this.head.appendChild(tif);
+        return this;
+    }
+
+    dropdown(options: { items: string[], onCommit?: (selectedIndex: number, selectedContent: string) => void, initial?: number, id?: string, label?: string }) {
+        let {items, onCommit, initial, id, label} = options;
+        let sel = document.createElement("select");
+        sel.classList.add("pure-u-23-24");
+        for (let item of items) {
+            sel.appendChild(document.createElement("option"))
+            .innerHTML = item;
+        }
+        if (initial) sel.selectedIndex = initial;
+        if (label) {
+            let lab = document.createElement("label");
+            if (!id) id = "dialog-builder-generated-" + Math.random().toString();
+            lab.htmlFor = id;
+            lab.innerHTML = label;
+            this.head.appendChild(lab);
+        }
+        if (id) sel.id = id;
+        this.onCommit.push(() => { if(onCommit) onCommit(sel.selectedIndex, sel.value); });
+        this.head.appendChild(sel);
         return this;
     }
 
