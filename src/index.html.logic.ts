@@ -1,4 +1,5 @@
 import FVM from './FVM/FVM'
+import { BorderType } from './FVM/FVMBorder';
 import FVMWaveSource from './FVM/FVMWaveSource';
 import DynamicImshowTyped from './Render/DynamicImshowTyped'
 
@@ -8,10 +9,11 @@ declare global {
         running: boolean;
         sources: FVMWaveSource[];
         reset_trigger: boolean;
+        borderType: BorderType;
     }
   }
 }
-window.fvm = { running: false, sources: [], reset_trigger: false };
+window.fvm = { running: false, sources: [], reset_trigger: false, borderType: BorderType.Reflexive };
 
 const mainCanvas = document.getElementById("main-canvas") as HTMLCanvasElement;
 const ctx = mainCanvas.getContext("2d")!;
@@ -33,6 +35,7 @@ function tick() {
         window.fvm.reset_trigger = false;
     }
     if (window.fvm.running) {
+        fvm.spaceBorderType = window.fvm.borderType;
         fvm.evolve(0.4 * 4 / 256 / 340);
         transfer_and_render();
     }
