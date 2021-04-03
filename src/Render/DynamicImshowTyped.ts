@@ -6,6 +6,8 @@ class DynamicImshowTyped {
     imageData: ImageData
     palette: number[][]
     lut: number[][]
+    mapmin = -1
+    mapmax = 1
 
     constructor(ctx: CanvasRenderingContext2D, data: NativeNumberArray, h: number, w: number) {
         if (h * w !== data.length) throw new Error(`Size mismatch: h ${h} * w ${w} = ${h * w} != data.length = ${data.length}`)
@@ -35,8 +37,8 @@ class DynamicImshowTyped {
     }
 
     render(ctx: CanvasRenderingContext2D) {
-        const min = -1; // _.min(this.data.map((x) => _.min(x)));
-        let max = 1; // _.max(this.data.map((x) => _.max(x)));
+        const min = this.mapmin;  // _.min(this.data.map((x) => _.min(x)));
+        let max = this.mapmax;  // _.max(this.data.map((x) => _.max(x)));
         if (min === undefined || max === undefined) throw Error("Unreachable!");
         if (min === max) max = min + 1;
         let idx = 0;

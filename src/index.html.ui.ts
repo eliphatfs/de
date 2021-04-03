@@ -150,6 +150,32 @@ state.enter();
 gpEditButton.onclick = () => { state.transition(GPEdit.instance); };
 waveSrcButton.onclick = () => { state.transition(CreateWaveSource.instance); };
 
+document.getElementById("colorbar-box-main")!.onclick = () => {
+    new DialogBuilder().rowForm({ title: "Color bar" })
+    .grid().gridUnit(1, 1)
+    .textInputField({
+        label: "High (m)",
+        initial: window.fvm.render.map_max.toString(),
+        onValidate: Util.fixNumericString,
+        onCommit: (s) => {
+            window.fvm.render.map_max = parseFloat(s);
+            document.getElementById("colorbar-label-high")!.innerHTML = parseFloat(s).toPrecision(2);
+        }
+    }).gridUnit(1, 1)
+    .textInputField({
+        label: "Low (m)",
+        initial: window.fvm.render.map_min.toString(),
+        onValidate: Util.fixNumericString,
+        onCommit: (s) => {
+            window.fvm.render.map_min = parseFloat(s);
+            document.getElementById("colorbar-label-low")!.innerHTML = parseFloat(s).toPrecision(2);
+        }
+    }).rowDiv()
+    .button("OK", (delegate) => delegate.commitFields().close(), { primary: true }).space()
+    .button("Cancel", (delegate) => delegate.close()).space()
+    .show();
+};
+
 document.getElementById("wave-project-settings-button")!.onclick = () => {
     new DialogBuilder().rowForm({ title: "Volume options" })
     .grid().gridUnit(1, 1).dropdown({

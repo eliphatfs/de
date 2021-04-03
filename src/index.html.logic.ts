@@ -10,10 +10,20 @@ declare global {
         sources: FVMWaveSource[];
         reset_trigger: boolean;
         borderType: BorderType;
+        render: {
+            map_max: number;
+            map_min: number;
+        }
     }
   }
 }
-window.fvm = { running: false, sources: [], reset_trigger: false, borderType: BorderType.Reflexive };
+window.fvm = {
+    running: false, sources: [], reset_trigger: false, borderType: BorderType.Reflexive,
+    render: {
+        map_max: 1.0,
+        map_min: -1.0
+    }
+};
 
 const mainCanvas = document.getElementById("main-canvas") as HTMLCanvasElement;
 const ctx = mainCanvas.getContext("2d")!;
@@ -23,6 +33,8 @@ let imshow = new DynamicImshowTyped(ctx, data, 256, 256);
 
 function transfer_and_render() {
     data.set(fvm.u0.toTensor().raw);
+    imshow.mapmax = window.fvm.render.map_max;
+    imshow.mapmin = window.fvm.render.map_min;
     imshow.render(ctx);
 }
 
